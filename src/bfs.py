@@ -7,8 +7,13 @@ class Node:
         self.y = y
         self.parent = parent # coordinates of parent node or -1 if start, -2 if goal
 
-def get_neighbours(node): 
-    positions = [[-1,-1], [-1, 1], [1, -1], [1, 1]] # N E S W grid 
+def in_window(x, y, window_width, window_height):
+    if x < 0 or y < 0 or x >= window_width or y >= window_height:
+        return False
+    return True
+
+def get_neighbours(node, parents): 
+    positions = [[-1,0], [1, 0], [0, -1], [0, 1]] # N E S W grid 
     
     x = node.x
     y = node.y 
@@ -16,6 +21,13 @@ def get_neighbours(node):
     neighbours = []
 
     for pos in positions: 
+        # Check in bounds 
+        if not in_window(x+pos[0], y+pos[1], parents.shape[0], parents.shape[1]):
+            continue
+
+        if parents[x+pos[0], y+pos[1]] != None: 
+            continue
+
         node = Node(x+pos[0], y+pos[1], [x,y])
         neighbours.append(node)
 
@@ -25,7 +37,12 @@ def mark_points_in_Circle(grid, cx, cy, r):
     
     for i in range(cx - r, cx + r + 1):
         for j in range(cy - r, cy + r + 1):
-            if (i**2 + j**2 <= r**2): 
+
+            # Check in bounds 
+            if not in_window(i, j, grid.shape[0], grid.shape[1]):
+                continue
+
+            if (((i-cx)**2 + (j-cy)**2) <= r**2):
                 grid[i,j] = True
 
     return grid
@@ -34,6 +51,11 @@ def mark_points_in_Rectangle(grid, rx1, ry1, rx2, ry2):
     
     for i in range(rx1, rx2 + 1): 
         for j in range(ry1, ry2 + 1):
+
+            # Check in bounds 
+            if not in_window(i, j, grid.shape[0], grid.shape[1]):
+                continue
+            
             grid[i,j] = True
     
     return grid
@@ -42,10 +64,13 @@ def get_path_from_goal(gx, gy, parent_grid):
     path = []
     parent = parent_grid[gx, gy]
 
+    path.append([gx,gy])
+
     while True:
         if parent == [-1]:
             return path 
         path.append(parent)
+
         parent = parent_grid[parent[0], parent[1]]
     ################################################### maybe implement a timeout function here? 
 
@@ -73,20 +98,25 @@ class BFS:
         parent_grid[start[0], start[1]] = [-1]
 
         # Mark goal points 
-        goal_grid = mark_points_in_Circle(goal_grid, goal[0], goal[1], goal_radius)
+        goal_grid = mark_points_in_Circle(  goal_grid, 
+                                            int(goal[0]/step_size),    
+                                            int(goal[1]/step_size), 
+                                            int(goal_radius/step_size))
 
         # Mark blocked points 
+        print("\nMarking Blocked Points")
         for obstacle in obstacles: 
             if obstacle['shape'] == "rectangle":
+                obs = np.array(obstacle['definition']) / step_size
                 blocked_grid = mark_points_in_Rectangle(blocked_grid,
-                                                        int(obstacle[0]), 
-                                                        int(obstacle[1]),
-                                                        int(obstacle[2]),
-                                                        int(obstacle[3]))
+                                                        int(obs[0]), 
+                                                        int(obs[1]),
+                                                        int(obs[2]),
+                                                        int(obs[3]))
 
             if obstacle['shape'] == "circle":
-                cx,cy = obstacle['definition'][0],obstacle['definition'][1]
-                r = obstacle['definition'][2]
+                cx,cy = obstacle['definition'][0] / step_size ,obstacle['definition'][1] / step_size
+                r = obstacle['definition'][2] / step_size
                 blocked_grid = mark_points_in_Circle(blocked_grid, int(cx), int(cy), int(r))
         
 
@@ -95,9 +125,24 @@ class BFS:
         nodes = []
         nodes.append(start_node)
 
-        for node in nodes: 
+        path_found = False
+
+        print("\nBeginning BFS")
+        while len(nodes) != 0 and not path_found: 
+
+            node = nodes.pop(0)
+
             # Get neighbours    
-            neighbours = get_neighbours(node)
+            neighbours = get_neighbours(node, parent_grid)
+
+            # Mark visited
+            visited_grid[node.x, node.y] = True
+
+            # Check if goal 
+            if goal_grid[node.x, node.y]:
+                path = get_path_from_goal(node.x, node.y, parent_grid)
+                self.path = path
+                path_found = True
 
             # For each neighbour 
             for neighbour in neighbours:
@@ -111,19 +156,9 @@ class BFS:
 
                 # Mark parent 
                 parent_grid[nx, ny] = neighbour.parent
-
-                # Check if goal 
-                if goal_grid[nx, ny]:
-                    path = get_path_from_goal(goal[0], goal[1], parent_grid)
-                    return path
                     
                 # Add to queue 
                 nodes.append(neighbour)
-
-            # Mark visited
-            visited_grid[node.x, node.y] = True
-
-
 
 
 
