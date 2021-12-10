@@ -16,6 +16,8 @@ payload['height'] = 400
 
 payload['obstacles'] = [{"shape":"rectangle", "definition":[0,0,2,2]},
                         {"shape":"rectangle", "definition":[6,6,10,10]},
+                        {"shape":"rectangle", "definition":[6,4,6,6]},
+                        {"shape":"rectangle", "definition":[10,10,14,14]},
                         {"shape":"circle", "definition":[4,2,1]}]
 payload['start'] = [12,8]
 payload['goal'] = [0,8]
