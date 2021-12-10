@@ -94,6 +94,7 @@ class BFS:
         goal_grid = np.zeros((grid_width, grid_height), dtype=bool)
         parent_grid = np.empty((grid_width, grid_height), dtype=object)
 
+
         # Mark start position
         parent_grid[start[0], start[1]] = [-1]
 
@@ -125,8 +126,11 @@ class BFS:
         nodes = []
         nodes.append(start_node)
 
-        path_found = False
+        self.blocked_grid = blocked_grid
+        self.goal_grid = goal_grid
 
+        path_found = False
+        
         print("\nBeginning BFS")
         while len(nodes) != 0 and not path_found: 
 
