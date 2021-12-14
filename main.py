@@ -11,20 +11,22 @@ payload['obstacles'] = [{"shape":"rectangle", "definition":[20,10,40,20]},{"shap
 payload['start'] = [0,0]
 payload['goal'] = [350,250]
 payload['goalRadius'] = 10
-payload['width'] = 400
-payload['height'] = 400
+payload['width'] = 4000
+payload['height'] = 4000
+payload['goal'] = [3500,2500]
+payload['step_size'] = 10
 
-payload['obstacles'] = [{"shape":"rectangle", "definition":[0,0,2,2]},
-                        {"shape":"rectangle", "definition":[6,6,10,10]},
-                        {"shape":"rectangle", "definition":[6,4,6,6]},
-                        {"shape":"rectangle", "definition":[10,10,14,14]},
-                        {"shape":"circle", "definition":[4,2,1]}]
-payload['start'] = [12,8]
-payload['goal'] = [0,8]
-payload['goalRadius'] = 1
-payload['width'] = 14
-payload['height'] = 14
-payload['step_size'] = 1
+#payload['obstacles'] = [{"shape":"rectangle", "definition":[0,0,2,2]},
+#                        {"shape":"rectangle", "definition":[6,6,10,10]},
+#                        {"shape":"rectangle", "definition":[6,4,6,6]},
+#                        {"shape":"rectangle", "definition":[10,10,14,14]},
+#                        {"shape":"circle", "definition":[4,2,1]}]
+#payload['start'] = [12,8]
+#payload['goal'] = [0,8]
+#payload['goalRadius'] = 1
+#payload['width'] = 14
+#payload['height'] = 14
+#payload['step_size'] = 1
 
 if __name__ == '__main__':
     bfs = BFS(payload)

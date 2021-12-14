@@ -72,7 +72,6 @@ def get_path_from_goal(gx, gy, parent_grid):
         path.append(parent)
 
         parent = parent_grid[parent[0], parent[1]]
-    ################################################### maybe implement a timeout function here? 
 
 class BFS:
     def __init__(self, payload):
@@ -105,7 +104,6 @@ class BFS:
                                             int(goal_radius/step_size))
 
         # Mark blocked points 
-        print("\nMarking Blocked Points")
         for obstacle in obstacles: 
             if obstacle['shape'] == "rectangle":
                 obs = np.array(obstacle['definition']) / step_size
@@ -131,7 +129,6 @@ class BFS:
 
         path_found = False
         
-        print("\nBeginning BFS")
         while len(nodes) != 0 and not path_found: 
 
             node = nodes.pop(0)
